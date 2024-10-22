@@ -1,25 +1,34 @@
+require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const cors = require('cors');
+const { router: authRouter, verifyToken } = require('./routes/auth');
 const Banner = require('./models/Banner');
 const FormSubmission = require('./models/FormSubmission');
 
 // Initialize the app
 const app = express();
-const port = 5050;
+const port = process.env.PORT || 5050; // Use environment variable or default to 5050
 
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // Adjust to match your frontend's origin
+    origin: process.env.FRONTEND_URL, // Use environment variable for frontend URL
     methods: ['GET', 'POST', 'DELETE'],
 }));
 
 app.use('/uploads', express.static('uploads')); // Serve the uploads directory
+// Use auth routes
+app.use('/api/auth', authRouter);
 
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://changelaom:iNm8TumEPzhx5gzx@cluster0.tn7cq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+// Protected Admin Panel Route Example
+app.get('/api/admin', verifyToken, (req, res) => {
+    res.send('Welcome to the admin panel');
+});
+
+// Connect to MongoDB using the URI from the .env file
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
