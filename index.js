@@ -75,17 +75,18 @@ app.post('/api/upload-banner', upload.single('banner'), (req, res) => {
         .catch(err => res.status(500).send('Error saving banner image: ' + err));
 });
 
-// API: Get the latest banner image
-app.get('/api/banner-image', (req, res) => {
-    Banner.findOne().sort({ createdAt: -1 }) // Get the latest banner
-        .then(banner => {
-            if (banner) {
-                res.json({ imageUrl: banner.imageUrl });
+// API: Get the latest 3 banner images
+app.get('/api/banner-images', (req, res) => {
+    Banner.find().sort({ createdAt: -1 }).limit(3) // Get the latest 3 banners
+        .then(banners => {
+            if (banners && banners.length > 0) {
+                const imageUrls = banners.map(banner => banner.imageUrl); // Extract image URLs
+                res.json({ imageUrls });
             } else {
                 res.status(404).send('No banner images found.');
             }
         })
-        .catch(err => res.status(500).send('Error fetching banner image: ' + err));
+        .catch(err => res.status(500).send('Error fetching banner images: ' + err));
 });
 
 // API: Delete a banner image
