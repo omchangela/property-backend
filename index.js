@@ -65,6 +65,20 @@ app.get('/api/form-submissions', (req, res) => {
         .catch(err => res.status(500).send('Error fetching form submissions: ' + err));
 });
 
+// API: Delete a form submission
+app.delete('/api/form-submissions/:id', (req, res) => {
+    const submissionId = req.params.id;
+    FormSubmission.findByIdAndDelete(submissionId)
+        .then(result => {
+            if (result) {
+                res.status(200).send('Form submission deleted successfully!');
+            } else {
+                res.status(404).send('Form submission not found.');
+            }
+        })
+        .catch(err => res.status(500).send('Error deleting form submission: ' + err));
+});
+
 // API: Upload banner image
 app.post('/api/upload-banner', upload.single('banner'), (req, res) => {
     const imageUrl = `/uploads/${req.file.filename}`;
