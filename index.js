@@ -14,9 +14,13 @@ const port = process.env.PORT || 5050; // Use environment variable or default to
 
 // Middleware
 app.use(express.json());
+
+// Middleware for handling CORS
 app.use(cors({
-    origin: process.env.FRONTEND_URL, // Use environment variable for frontend URL
-    methods: ['GET', 'POST', 'DELETE'],
+    origin: 'https://www.makemybuild.in',  // Allow only this specific origin
+    methods: ['GET', 'POST', 'DELETE'],    // Define allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    credentials: true                      // Allow credentials if needed (cookies, auth headers)
 }));
 
 app.use('/uploads', express.static('uploads')); // Serve the uploads directory
