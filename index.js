@@ -16,12 +16,7 @@ const port = process.env.PORT || 5050; // Use environment variable or default to
 app.use(express.json());
 
 // Middleware for handling CORS
-app.use(cors({
-    origin: 'https://www.makemybuild.in',  // Allow only this specific origin
-    methods: ['GET', 'POST', 'DELETE'],    // Define allowed HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
-    credentials: true                      // Allow credentials if needed (cookies, auth headers)
-}));
+app.use(cors());
 
 app.use('/uploads', express.static('uploads')); // Serve the uploads directory
 // Use auth routes
