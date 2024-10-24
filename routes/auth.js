@@ -39,26 +39,37 @@ router.post('/register', [
 
 // Login route
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body; // Extract email and password from request body
 
     try {
+        // Find the user by email in the database
         const user = await User.findOne({ email });
+        
+        // If no user is found, return an error
         if (!user) {
             return res.status(401).send('Invalid email or password');
         }
 
+        // Compare the provided password with the hashed password in the database
         const isMatch = await bcrypt.compare(password, user.password);
+        
+        // If the passwords don't match, return an error
         if (!isMatch) {
             return res.status(401).send('Invalid email or password');
         }
 
+        // If password matches, create a JWT token
         const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '1h' });
+
+        // Respond with the token
         res.json({ token });
     } catch (error) {
-        console.error('Error logging in:', error); // Log the error for debugging
+        // Log the error for debugging purposes and return a server error response
+        console.error('Error logging in:', error);
         res.status(500).send('Error logging in: ' + error.message);
     }
 });
+
 
 // Middleware to verify the token
 const verifyToken = (req, res, next) => {

@@ -6,6 +6,7 @@ const cors = require('cors');
 const { router: authRouter, verifyToken } = require('./routes/auth');
 const Banner = require('./models/Banner');
 const FormSubmission = require('./models/FormSubmission');
+const CostCalculator = require('./models/CostCalculator'); // Import CostCalculator
 
 // Initialize the app
 const app = express();
@@ -77,6 +78,35 @@ app.delete('/api/form-submissions/:id', (req, res) => {
             }
         })
         .catch(err => res.status(500).send('Error deleting form submission: ' + err));
+});
+
+// API: Submit cost calculator form data
+app.post('/api/cost-calculator', (req, res) => {
+    const { name, mobile, location, area, carParking, balconyUtilityArea, package, city } = req.body;
+
+    // Create a new CostCalculator document using the form data
+    const costCalculatorData = new CostCalculator({
+        name,
+        mobile,
+        location,
+        area,
+        carParking,
+        balconyUtilityArea,
+        package,
+        city
+    });
+
+    // Save the data in the database
+    costCalculatorData.save()
+        .then(() => res.status(200).send('Cost calculator form submitted successfully!'))
+        .catch(err => res.status(500).send('Error saving cost calculator data: ' + err));
+});
+
+// API: Get all cost calculator submissions (if needed)
+app.get('/api/cost-calculator-submissions', (req, res) => {
+    CostCalculator.find()
+        .then(submissions => res.json(submissions))
+        .catch(err => res.status(500).send('Error fetching cost calculator submissions: ' + err));
 });
 
 // API: Upload banner image
